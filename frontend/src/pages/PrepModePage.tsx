@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Sparkles, Check, ArrowRight, ShieldCheck, Plus, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Sparkles, Check, Plus, CheckCircle2, ShieldCheck, ChevronRight } from 'lucide-react';
 import { EventItem, PrepPlanResponse } from '../types';
 import { api } from '../services/api';
 
 interface PrepModePageProps {
   userId: number;
 }
+
+const cardStyle: React.CSSProperties = {
+  background: '#FFFFFF',
+  borderRadius: 20,
+  border: '1px solid #ECEEF1',
+  padding: '24px 28px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+};
 
 export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -29,7 +37,6 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
       const data = await api.getEvents(userId);
       setEvents(data);
       if (data.length > 0 && !selectedPlan) {
-        // Generate plan for the first event automatically
         handleGeneratePlanForEvent(data[0]);
       }
     } catch (err) {
@@ -70,7 +77,7 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
         unfamiliar_location: unfamiliarLocation
       };
 
-      const savedEvt = await api.createEvent(newEvt);
+      await api.createEvent(newEvt);
       const plan = await api.generatePrepPlan(newEvt);
       setSelectedPlan(plan);
       setShowNewEventForm(false);
@@ -83,76 +90,163 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* ── Page Header ── */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 12,
+      }}>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-sky-400" />
-            Prep Mode — Proactive Event Accommodations
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Analyze upcoming presentations, appointments, or transitions in advance to prepare personalized sensory accommodations.
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              background: '#EEF2FF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Calendar size={18} color="#4361EE" strokeWidth={2.2} />
+            </div>
+            <h1 style={{
+              fontSize: 22,
+              fontWeight: 800,
+              color: '#1E293B',
+              letterSpacing: '-0.3px',
+              margin: 0,
+            }}>
+              Plan Ahead & Accommodations
+            </h1>
+          </div>
+          <p style={{
+            fontSize: 13.5,
+            color: '#64748B',
+            marginTop: 5,
+            marginBottom: 0,
+          }}>
+            Prepare for upcoming lectures, meetings, or transitions in advance with tailored sensory strategies.
           </p>
         </div>
 
         <button
           onClick={() => setShowNewEventForm(!showNewEventForm)}
-          className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition-all self-start sm:self-auto shadow-sm"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '10px 18px',
+            borderRadius: 12,
+            border: 'none',
+            background: showNewEventForm ? '#F1F5F9' : '#4361EE',
+            color: showNewEventForm ? '#475569' : '#FFFFFF',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
         >
-          <Plus className="h-4 w-4" />
-          <span>{showNewEventForm ? 'Cancel New Event' : 'Plan New Event'}</span>
+          <Plus size={16} strokeWidth={2.5} />
+          <span>{showNewEventForm ? 'Close Form' : 'Plan New Event'}</span>
         </button>
       </div>
 
-      {/* New Event Form (collapsible) */}
+      {/* ── New Event Form (collapsible) ── */}
       {showNewEventForm && (
-        <form onSubmit={handleCreateAndPlan} className="glass-panel-glow rounded-2xl p-5 border-slate-700 bg-slate-900/90 space-y-4">
-          <h3 className="text-xs font-bold text-sky-400 uppercase tracking-wider font-mono">
-            Enter Upcoming Event Parameters
+        <form onSubmit={handleCreateAndPlan} style={{ ...cardStyle, background: '#F8FAFC' }}>
+          <h3 style={{
+            fontSize: 15.5,
+            fontWeight: 700,
+            color: '#1E293B',
+            marginBottom: 16,
+          }}>
+            Event Details & Sensory Expectations
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 16,
+            marginBottom: 16,
+          }}>
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Event Name</label>
+              <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                Event Name
+              </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 focus:outline-none focus:border-sky-500"
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  fontSize: 13,
+                  color: '#1E293B',
+                }}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Scheduled Date & Time</label>
+              <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                Date & Time
+              </label>
               <input
                 type="datetime-local"
                 value={dateTime}
                 onChange={(e) => setDateTime(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 focus:outline-none focus:border-sky-500"
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  fontSize: 13,
+                  color: '#1E293B',
+                }}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Physical Location</label>
+              <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                Location
+              </label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 focus:outline-none focus:border-sky-500"
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  fontSize: 13,
+                  color: '#1E293B',
+                }}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 16,
+            marginBottom: 16,
+          }}>
             <div>
-              <div className="flex justify-between text-xs text-slate-300 mb-1">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
                 <span>Expected Noise</span>
-                <span className="font-mono text-sky-400">{Math.round(expectedNoise * 100)}%</span>
+                <span style={{ color: '#10B981', fontWeight: 700 }}>{Math.round(expectedNoise * 100)}%</span>
               </div>
               <input
                 type="range"
@@ -161,14 +255,14 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
                 step="0.05"
                 value={expectedNoise}
                 onChange={(e) => setExpectedNoise(parseFloat(e.target.value))}
-                className="w-full accent-sky-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{ width: '100%', accentColor: '#10B981' }}
               />
             </div>
 
             <div>
-              <div className="flex justify-between text-xs text-slate-300 mb-1">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
                 <span>Expected Crowd</span>
-                <span className="font-mono text-indigo-400">{Math.round(expectedCrowd * 100)}%</span>
+                <span style={{ color: '#3B82F6', fontWeight: 700 }}>{Math.round(expectedCrowd * 100)}%</span>
               </div>
               <input
                 type="range"
@@ -177,98 +271,172 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
                 step="0.05"
                 value={expectedCrowd}
                 onChange={(e) => setExpectedCrowd(parseFloat(e.target.value))}
-                className="w-full accent-indigo-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{ width: '100%', accentColor: '#3B82F6' }}
               />
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
-              <span className="text-xs text-slate-300">Routine Change</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '10px 14px',
+              borderRadius: 10,
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+            }}>
+              <span style={{ fontSize: 12.5, fontWeight: 600, color: '#334155' }}>Routine Change</span>
               <button
                 type="button"
                 onClick={() => setRoutineChange(!routineChange)}
-                className={`px-2.5 py-1 rounded text-xs font-bold ${
-                  routineChange ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-400'
-                }`}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: 50,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: 'none',
+                  background: routineChange ? '#EA580C' : '#E2E8F0',
+                  color: routineChange ? 'white' : '#64748B',
+                  cursor: 'pointer',
+                }}
               >
                 {routineChange ? 'YES' : 'NO'}
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
-              <span className="text-xs text-slate-300">Unfamiliar Location</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '10px 14px',
+              borderRadius: 10,
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+            }}>
+              <span style={{ fontSize: 12.5, fontWeight: 600, color: '#334155' }}>Unfamiliar Location</span>
               <button
                 type="button"
                 onClick={() => setUnfamiliarLocation(!unfamiliarLocation)}
-                className={`px-2.5 py-1 rounded text-xs font-bold ${
-                  unfamiliarLocation ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'
-                }`}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: 50,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: 'none',
+                  background: unfamiliarLocation ? '#D97706' : '#E2E8F0',
+                  color: unfamiliarLocation ? 'white' : '#64748B',
+                  cursor: 'pointer',
+                }}
               >
                 {unfamiliarLocation ? 'YES' : 'NO'}
               </button>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Notes / Contextual Factors</label>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+              Notes or Contextual Sensitivities
+            </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Schedule moved earlier, auditorium lighting may be bright"
-              className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 focus:outline-none focus:border-sky-500"
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: '1px solid #CBD5E1',
+                background: '#FFFFFF',
+                fontSize: 13,
+                color: '#1E293B',
+              }}
             />
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               type="submit"
               disabled={isGenerating}
-              className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+              style={{
+                padding: '10px 20px',
+                borderRadius: 12,
+                border: 'none',
+                background: '#4361EE',
+                color: 'white',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                opacity: isGenerating ? 0.6 : 1,
+              }}
             >
-              {isGenerating ? 'Analyzing History...' : 'Generate Proactive Prep Plan'}
+              {isGenerating ? 'Generating Strategy...' : 'Generate Proactive Plan'}
             </button>
           </div>
         </form>
       )}
 
-      {/* Main Two-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* ── Main Two-Column Layout ── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1.6fr',
+        gap: 20,
+      }}>
         
         {/* Left: Upcoming Events List */}
-        <div className="lg:col-span-4 space-y-3">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
-            Upcoming Scheduled Events
-          </h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <h2 style={{
+            fontSize: 16,
+            fontWeight: 700,
+            color: '#1E293B',
+            margin: 0,
+          }}>
+            Upcoming Events
+          </h2>
 
-          <div className="space-y-2.5">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {events.map((evt) => (
               <div
                 key={evt.id}
                 onClick={() => handleGeneratePlanForEvent(evt)}
-                className="glass-panel p-3.5 rounded-xl border border-slate-800 hover:border-sky-500/40 cursor-pointer transition-all group"
+                style={{
+                  ...cardStyle,
+                  padding: '16px 18px',
+                  cursor: 'pointer',
+                  border: selectedPlan?.title === evt.title ? '2px solid #4361EE' : '1px solid #ECEEF1',
+                  background: selectedPlan?.title === evt.title ? '#F8FAFC' : '#FFFFFF',
+                  transition: 'all 0.15s ease',
+                }}
               >
-                <div className="flex items-start justify-between">
-                  <h4 className="text-sm font-semibold text-slate-200 group-hover:text-sky-300 transition-colors">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 14.5, fontWeight: 700, color: '#1E293B' }}>
                     {evt.title}
-                  </h4>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 capitalize">
+                  </span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: 50,
+                    background: '#EEF2FF',
+                    color: '#4361EE',
+                    textTransform: 'capitalize',
+                  }}>
                     {evt.event_type}
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-3 text-[11px] text-slate-400 mt-2">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3 text-sky-400" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12, color: '#64748B' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Clock size={13} color="#4361EE" />
                     {new Date(evt.scheduled_time).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3 text-indigo-400" />
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <MapPin size={13} color="#F59E0B" />
                     {evt.location}
                   </span>
                 </div>
 
                 {evt.notes && (
-                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                  <p style={{ fontSize: 12, color: '#94A3B8', margin: '8px 0 0 0', lineHeight: 1.35 }}>
                     {evt.notes}
                   </p>
                 )}
@@ -278,65 +446,119 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
         </div>
 
         {/* Right: Proactive Prep Plan Result */}
-        <div className="lg:col-span-8">
+        <div>
           {selectedPlan ? (
-            <div className="glass-panel-glow rounded-2xl p-6 border-slate-800 space-y-6">
-              
+            <div style={cardStyle}>
               {/* Plan Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-2">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingBottom: 16,
+                marginBottom: 18,
+                borderBottom: '1px solid #F1F5F9',
+                flexWrap: 'wrap',
+                gap: 12,
+              }}>
                 <div>
-                  <div className="flex items-center space-x-2 text-sky-400 text-xs font-mono font-bold uppercase tracking-wider mb-1">
-                    <Sparkles className="h-4 w-4" />
-                    <span>ORION PROACTIVE PREP PLAN</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#4361EE', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                    <Sparkles size={14} />
+                    <span>PROACTIVE PREPARATION PLAN</span>
                   </div>
-                  <h2 className="text-lg font-bold text-slate-100">
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1E293B', margin: 0 }}>
                     {selectedPlan.title}
                   </h2>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block uppercase">Projected Support Demand</span>
-                    <span className={`text-base font-bold font-mono ${
-                      selectedPlan.estimated_support_requirement === 'HIGH' ? 'text-rose-400' :
-                      selectedPlan.estimated_support_requirement === 'MEDIUM' ? 'text-amber-400' : 'text-emerald-400'
-                    }`}>
-                      {selectedPlan.estimated_support_requirement}
-                    </span>
-                  </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: 11, color: '#64748B', display: 'block' }}>Expected Sensory Load</span>
+                  <span style={{
+                    fontSize: 14,
+                    fontWeight: 800,
+                    padding: '3px 10px',
+                    borderRadius: 50,
+                    display: 'inline-block',
+                    marginTop: 3,
+                    ...(selectedPlan.estimated_support_requirement === 'HIGH'
+                      ? { background: '#FEE2E2', color: '#991B1B' }
+                      : selectedPlan.estimated_support_requirement === 'MEDIUM'
+                      ? { background: '#FEF3C7', color: '#92400E' }
+                      : { background: '#D1FAE5', color: '#065F46' }),
+                  }}>
+                    {selectedPlan.estimated_support_requirement}
+                  </span>
                 </div>
               </div>
 
               {/* Actionable Preparation Checklist */}
-              <div>
-                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono mb-3">
-                  Actionable Preparation Steps
+              <div style={{ marginBottom: 20 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1E293B', marginBottom: 10 }}>
+                  Actionable Steps Before You Go
                 </h3>
-                <div className="space-y-2">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {selectedPlan.actionable_prep_steps.map((step, idx) => (
-                    <div key={idx} className="flex items-start space-x-2.5 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
-                      <div className="h-5 w-5 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="h-3 w-3 text-emerald-400" />
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                        padding: '10px 14px',
+                        borderRadius: 12,
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                      }}
+                    >
+                      <div style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        background: '#D1FAE5',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}>
+                        <Check size={12} color="#065F46" strokeWidth={3} />
                       </div>
-                      <span className="text-xs text-slate-200">{step}</span>
+                      <span style={{ fontSize: 13, color: '#1E293B', lineHeight: 1.45 }}>
+                        {step}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Recommended Strategies */}
-              <div>
-                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono mb-3">
-                  Recommended Strategy Accommodations
+              <div style={{ marginBottom: 20 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1E293B', marginBottom: 10 }}>
+                  Recommended Support Accommodations
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: 10,
+                }}>
                   {selectedPlan.recommended_interventions.map((rec) => (
-                    <div key={rec.intervention_id} className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                      <div className="flex justify-between items-center text-xs font-semibold text-slate-200 mb-1">
-                        <span>{rec.intervention}</span>
-                        <span className="font-mono text-sky-400 font-bold">{Math.round(rec.score * 100)}%</span>
+                    <div
+                      key={rec.intervention_id}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1E293B' }}>
+                          {rec.intervention}
+                        </span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#10B981' }}>
+                          {Math.round(rec.score * 100)}%
+                        </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 line-clamp-2">
+                      <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.4 }}>
                         {rec.description}
                       </p>
                     </div>
@@ -345,19 +567,30 @@ export const PrepModePage: React.FC<PrepModePageProps> = ({ userId }) => {
               </div>
 
               {/* Traceable Why Explanation */}
-              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
-                <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider font-mono block mb-1">
-                  WHY THIS PLAN?
+              <div style={{
+                padding: '14px 16px',
+                borderRadius: 12,
+                background: '#EEF2FF',
+                borderLeft: '4px solid #4361EE',
+              }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#312E81', display: 'block', marginBottom: 2 }}>
+                  Why this plan?
                 </span>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p style={{ fontSize: 12.5, color: '#3730A3', margin: 0, lineHeight: 1.5 }}>
                   {selectedPlan.why_explanation}
                 </p>
               </div>
 
             </div>
           ) : (
-            <div className="glass-panel rounded-2xl p-8 text-center text-slate-400 border-slate-800">
-              Select an upcoming event or plan a new event to view proactive accommodations.
+            <div style={{
+              ...cardStyle,
+              padding: '40px',
+              textAlign: 'center',
+              color: '#64748B',
+              fontSize: 13.5,
+            }}>
+              Select an upcoming event on the left to see proactive sensory accommodations.
             </div>
           )}
         </div>

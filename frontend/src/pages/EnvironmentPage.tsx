@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, Camera, ShieldCheck, Sliders, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Volume2, Camera, ShieldCheck, AlertCircle, CheckCircle2, Radio } from 'lucide-react';
 import { ContextData } from '../types';
 import { AudioSensor } from '../utils/audio';
 import { CameraSensor } from '../utils/camera';
@@ -13,6 +13,14 @@ interface EnvironmentPageProps {
   isCamActive: boolean;
   setIsCamActive: (active: boolean) => void;
 }
+
+const cardStyle: React.CSSProperties = {
+  background: '#FFFFFF',
+  borderRadius: 20,
+  border: '1px solid #ECEEF1',
+  padding: '24px 28px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+};
 
 export const EnvironmentPage: React.FC<EnvironmentPageProps> = ({
   context,
@@ -43,7 +51,6 @@ export const EnvironmentPage: React.FC<EnvironmentPageProps> = ({
     } else {
       setMicStatus('connecting');
       const sensor = new AudioSensor((noiseLevel) => {
-        // Calculate sudden variation delta
         const delta = Math.abs(noiseLevel - prevNoiseRef.current);
         setSoundVariation(Number(delta.toFixed(2)));
         prevNoiseRef.current = noiseLevel;
@@ -77,7 +84,6 @@ export const EnvironmentPage: React.FC<EnvironmentPageProps> = ({
     } else {
       setCamStatus('connecting');
       const sensor = new CameraSensor(({ brightness, activity }) => {
-        // Approximate crowd density estimate from activity motion
         const estCrowd = Math.min(1.0, Math.max(0.1, activity * 0.9));
         setCrowdEstimate(Number(estCrowd.toFixed(2)));
 
@@ -113,199 +119,346 @@ export const EnvironmentPage: React.FC<EnvironmentPageProps> = ({
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       
-      {/* Header */}
+      {/* ── Page Header ── */}
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-slate-100">
-          Environment & Sensor Telemetry
-        </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Layer 1 sensing derives non-invasive ambient acoustic and visual features. Sensors are 100% optional.
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 32,
+            height: 32,
+            borderRadius: 10,
+            background: '#E6F7F0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Radio size={18} color="#10B981" strokeWidth={2.2} />
+          </div>
+          <h1 style={{
+            fontSize: 22,
+            fontWeight: 800,
+            color: '#1E293B',
+            letterSpacing: '-0.3px',
+            margin: 0,
+          }}>
+            Live Environment & Sensors
+          </h1>
+        </div>
+        <p style={{
+          fontSize: 13.5,
+          color: '#64748B',
+          marginTop: 5,
+          marginBottom: 0,
+        }}>
+          Real-time ambient sound and visual sensing. Sensors run entirely locally in your browser and are 100% optional.
         </p>
       </div>
 
-      {/* Privacy Guarantee Banner */}
-      <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex items-start space-x-3 text-sky-200">
-        <ShieldCheck className="h-5 w-5 text-sky-400 shrink-0 mt-0.5" />
-        <div className="text-xs space-y-1">
-          <div className="font-bold">Strict Privacy Architecture</div>
-          <p className="text-slate-300">
-            Only derived numeric environmental features (noise volume, brightness level, activity delta) are sent to the server.
-            Raw audio/video is never stored, never transmitted, and never analyzed for facial or speech recognition.
+      {/* ── Privacy Guarantee Banner ── */}
+      <div style={{
+        ...cardStyle,
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 14,
+        background: '#E6F7F0',
+        border: '1px solid #A7F3D0',
+      }}>
+        <ShieldCheck size={22} color="#059669" style={{ flexShrink: 0, marginTop: 2 }} />
+        <div>
+          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#065F46' }}>
+            Strict On-Device Privacy Architecture
+          </div>
+          <p style={{ fontSize: 12.5, color: '#047857', margin: '4px 0 0 0', lineHeight: 1.45 }}>
+            Only non-identifying numeric measurements (noise decibel level, brightness, motion delta) are processed. Raw audio or video streams are never transmitted, never saved, and never inspected for speech or faces.
           </p>
         </div>
       </div>
 
-      {/* Active Sensor Panels */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* ── Active Sensor Panels Grid ── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 20,
+      }}>
         
         {/* Microphone Sensor Panel */}
-        <div className="glass-panel rounded-2xl p-5 border-slate-800 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div className="flex items-center space-x-2">
-              <Volume2 className="h-5 w-5 text-sky-400" />
+        <div style={cardStyle}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingBottom: 16,
+            marginBottom: 16,
+            borderBottom: '1px solid #F1F5F9',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                background: '#E6F7F0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Volume2 size={20} color="#10B981" />
+              </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-100">Microphone Context</h3>
-                <span className="text-[10px] text-slate-400">Web Audio API Analyser</span>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1E293B', margin: 0 }}>
+                  Microphone Context
+                </h3>
+                <span style={{ fontSize: 11.5, color: '#64748B' }}>Web Audio Analyser</span>
               </div>
             </div>
 
             <button
               onClick={handleToggleMic}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                isMicActive
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                  : 'bg-sky-500 text-slate-950 hover:bg-sky-400'
-              }`}
+              style={{
+                fontSize: 12.5,
+                fontWeight: 700,
+                padding: '8px 16px',
+                borderRadius: 50,
+                border: 'none',
+                cursor: 'pointer',
+                background: isMicActive ? '#FEE2E2' : '#E6F7F0',
+                color: isMicActive ? '#DC2626' : '#065F46',
+                transition: 'all 0.15s ease',
+              }}
             >
-              {isMicActive ? 'Turn Microphone OFF' : 'Enable Microphone'}
+              {isMicActive ? 'Turn Mic OFF' : 'Enable Microphone'}
             </button>
           </div>
 
           {micStatus === 'denied' && (
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>Microphone unavailable. ORION continues with manual simulation controls.</span>
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: 12,
+              background: '#FEF3C7',
+              color: '#92400E',
+              fontSize: 12.5,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginBottom: 14,
+            }}>
+              <AlertCircle size={16} />
+              <span>Microphone permission denied. ORION uses manual sensory sliders below.</span>
             </div>
           )}
 
           {/* Metric Readouts */}
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Ambient Volume (RMS)</span>
-                <span className="font-mono text-sky-400 font-bold">{Math.round(context.noise_level * 100)}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                  Ambient Noise Level
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#10B981' }}>
+                  {Math.round(context.noise_level * 100)}%
+                </span>
               </div>
-              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                <div 
-                  className="bg-sky-400 h-2 rounded-full transition-all duration-150"
-                  style={{ width: `${context.noise_level * 100}%` }}
-                />
+              <div style={{ height: 8, borderRadius: 50, background: '#F1F5F9', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  borderRadius: 50,
+                  width: `${context.noise_level * 100}%`,
+                  background: '#10B981',
+                  transition: 'width 0.15s ease',
+                }} />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Sound Variation / Spikes</span>
-                <span className="font-mono text-indigo-400 font-bold">{Math.round(soundVariation * 100)}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                  Sound Spikes / Dynamics
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#3B82F6' }}>
+                  {Math.round(soundVariation * 100)}%
+                </span>
               </div>
-              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                <div 
-                  className="bg-indigo-400 h-2 rounded-full transition-all duration-150"
-                  style={{ width: `${soundVariation * 100}%` }}
-                />
+              <div style={{ height: 8, borderRadius: 50, background: '#F1F5F9', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  borderRadius: 50,
+                  width: `${soundVariation * 100}%`,
+                  background: '#3B82F6',
+                  transition: 'width 0.15s ease',
+                }} />
               </div>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          <div style={{
+            fontSize: 12,
+            color: '#64748B',
+            marginTop: 16,
+            paddingTop: 12,
+            borderTop: '1px solid #F1F5F9',
+          }}>
             {isMicActive ? (
-              <span className="text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Live audio processing active locally in browser memory.
+              <span style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                <CheckCircle2 size={15} />
+                Live acoustic processing active locally in browser memory.
               </span>
             ) : (
-              <span>Sensor is offline. You can manually adjust acoustic load using the sliders below.</span>
+              <span>Microphone sensor is offline. You can adjust noise load manually with the sliders below.</span>
             )}
           </div>
         </div>
 
         {/* Camera Sensor Panel */}
-        <div className="glass-panel rounded-2xl p-5 border-slate-800 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div className="flex items-center space-x-2">
-              <Camera className="h-5 w-5 text-amber-400" />
+        <div style={cardStyle}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingBottom: 16,
+            marginBottom: 16,
+            borderBottom: '1px solid #F1F5F9',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                background: '#FEF9E7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Camera size={20} color="#F59E0B" />
+              </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-100">Camera Context</h3>
-                <span className="text-[10px] text-slate-400">Low-res Canvas Luminance & Motion</span>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1E293B', margin: 0 }}>
+                  Camera Context
+                </h3>
+                <span style={{ fontSize: 11.5, color: '#64748B' }}>Low-res Motion & Luminance</span>
               </div>
             </div>
 
             <button
               onClick={handleToggleCam}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                isCamActive
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                  : 'bg-amber-400 text-slate-950 hover:bg-amber-300'
-              }`}
+              style={{
+                fontSize: 12.5,
+                fontWeight: 700,
+                padding: '8px 16px',
+                borderRadius: 50,
+                border: 'none',
+                cursor: 'pointer',
+                background: isCamActive ? '#FEE2E2' : '#FEF3C7',
+                color: isCamActive ? '#DC2626' : '#B45309',
+                transition: 'all 0.15s ease',
+              }}
             >
-              {isCamActive ? 'Turn Camera OFF' : 'Enable Camera'}
+              {isCamActive ? 'Turn Cam OFF' : 'Enable Camera'}
             </button>
           </div>
 
           {camStatus === 'denied' && (
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>Camera unavailable. ORION continues with manual simulation controls.</span>
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: 12,
+              background: '#FEF3C7',
+              color: '#92400E',
+              fontSize: 12.5,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginBottom: 14,
+            }}>
+              <AlertCircle size={16} />
+              <span>Camera permission denied. ORION uses manual sensory sliders below.</span>
             </div>
           )}
 
           {/* Metric Readouts */}
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Environmental Lighting (Luminance)</span>
-                <span className="font-mono text-amber-400 font-bold">{Math.round(context.brightness * 100)}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                  Ambient Luminance
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>
+                  {Math.round(context.brightness * 100)}%
+                </span>
               </div>
-              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                <div 
-                  className="bg-amber-400 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${context.brightness * 100}%` }}
-                />
+              <div style={{ height: 8, borderRadius: 50, background: '#F1F5F9', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  borderRadius: 50,
+                  width: `${context.brightness * 100}%`,
+                  background: '#F59E0B',
+                  transition: 'width 0.15s ease',
+                }} />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Movement Activity Delta</span>
-                <span className="font-mono text-teal-400 font-bold">{Math.round(context.activity_level * 100)}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                  Motion & Activity
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#8B5CF6' }}>
+                  {Math.round(context.activity_level * 100)}%
+                </span>
               </div>
-              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                <div 
-                  className="bg-teal-400 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${context.activity_level * 100}%` }}
-                />
+              <div style={{ height: 8, borderRadius: 50, background: '#F1F5F9', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  borderRadius: 50,
+                  width: `${context.activity_level * 100}%`,
+                  background: '#8B5CF6',
+                  transition: 'width 0.15s ease',
+                }} />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Approximate Crowd Estimate</span>
-                <span className="font-mono text-indigo-400 font-bold">{Math.round(crowdEstimate * 100)}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                  Crowd Density Approximation
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#3B82F6' }}>
+                  {Math.round(crowdEstimate * 100)}%
+                </span>
               </div>
-              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                <div 
-                  className="bg-indigo-400 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${crowdEstimate * 100}%` }}
-                />
+              <div style={{ height: 8, borderRadius: 50, background: '#F1F5F9', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  borderRadius: 50,
+                  width: `${crowdEstimate * 100}%`,
+                  background: '#3B82F6',
+                  transition: 'width 0.15s ease',
+                }} />
               </div>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          <div style={{
+            fontSize: 12,
+            color: '#64748B',
+            marginTop: 16,
+            paddingTop: 12,
+            borderTop: '1px solid #F1F5F9',
+          }}>
             {isCamActive ? (
-              <span className="text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Optical sampling active (48x36 px, 2Hz sampling). No frames stored.
+              <span style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                <CheckCircle2 size={15} />
+                Optical sampling active (downscaled 48x36 px, 2Hz sampling). No frames saved.
               </span>
             ) : (
-              <span>Camera is offline. Lighting and crowd levels can be adjusted manually.</span>
+              <span>Camera is offline. Light and crowd levels can be adjusted manually below.</span>
             )}
           </div>
         </div>
 
       </div>
 
-      {/* Manual Simulation Controls */}
-      <section>
-        <div className="mb-2">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
-            Interactive Override Sliders
-          </h3>
-        </div>
-        <LiveSimulationSliders context={context} onChange={setContext} />
-      </section>
+      {/* ── Manual Simulation Sliders ── */}
+      <LiveSimulationSliders context={context} onChange={setContext} />
 
     </div>
   );

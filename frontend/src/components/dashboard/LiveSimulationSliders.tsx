@@ -1,11 +1,19 @@
 import React from 'react';
-import { Sliders, Volume2, Users, Sun, Zap, CalendarClock, Compass, RotateCcw } from 'lucide-react';
+import { Sliders, Volume2, Users, Sun, Zap, CalendarClock, Compass } from 'lucide-react';
 import { ContextData } from '../../types';
 
 interface LiveSimulationSlidersProps {
   context: ContextData;
   onChange: (updated: ContextData) => void;
 }
+
+const cardStyle: React.CSSProperties = {
+  background: '#FFFFFF',
+  borderRadius: 20,
+  border: '1px solid #ECEEF1',
+  padding: '24px 28px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+};
 
 export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
   context,
@@ -26,45 +34,100 @@ export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-5 border-slate-800">
+    <div style={cardStyle}>
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-800">
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 12,
+        marginBottom: 18,
+        paddingBottom: 16,
+        borderBottom: '1px solid #F1F5F9',
+      }}>
         <div>
-          <div className="flex items-center space-x-2">
-            <Sliders className="h-4 w-4 text-sky-400" />
-            <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono">
-              SIMULATION / DEMO CONTROLS
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Sliders size={18} color="#4361EE" />
+            <h3 style={{
+              fontSize: 16,
+              fontWeight: 700,
+              color: '#1E293B',
+              margin: 0,
+            }}>
+              Interactive Sensory Controls
             </h3>
           </div>
-          <p className="text-[11px] text-slate-400 mt-0.5">
-            Judge control panel: Adjust environmental factors to observe real-time support requirement recalculations.
+          <p style={{
+            fontSize: 12.5,
+            color: '#64748B',
+            marginTop: 4,
+            marginBottom: 0,
+          }}>
+            Adjust environmental parameters to test how recommendations adapt in real time.
           </p>
         </div>
 
         {/* Quick Presets */}
-        <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           <button
-            onClick={() => applyPreset({ noise_level: 0.20, crowd_level: 0.15, brightness: 0.40, routine_change: false, unfamiliar_location: false })}
-            className="text-[10px] font-medium px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            onClick={() => applyPreset({ noise_level: 0.15, crowd_level: 0.10, brightness: 0.40, routine_change: false, unfamiliar_location: false })}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid #E2E8F0',
+              background: '#F8FAFC',
+              color: '#334155',
+              cursor: 'pointer',
+            }}
           >
-            Quiet Baseline
+            Quiet Space
           </button>
           <button
-            onClick={() => applyPreset({ noise_level: 0.88, crowd_level: 0.85, brightness: 0.75, routine_change: false, unfamiliar_location: false })}
-            className="text-[10px] font-medium px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            onClick={() => applyPreset({ noise_level: 0.75, crowd_level: 0.70, brightness: 0.65, routine_change: false, unfamiliar_location: false })}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid #E2E8F0',
+              background: '#F8FAFC',
+              color: '#334155',
+              cursor: 'pointer',
+            }}
           >
-            Loud Cafeteria
+            Busy Cafe
           </button>
           <button
-            onClick={() => applyPreset({ noise_level: 0.55, crowd_level: 0.45, brightness: 0.50, routine_change: true, unfamiliar_location: true })}
-            className="text-[10px] font-medium px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            onClick={() => applyPreset({ noise_level: 0.50, crowd_level: 0.45, brightness: 0.50, routine_change: true, unfamiliar_location: true })}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid #E2E8F0',
+              background: '#F8FAFC',
+              color: '#334155',
+              cursor: 'pointer',
+            }}
           >
-            Routine Shift
+            New Location
           </button>
           <button
-            onClick={() => applyPreset({ noise_level: 0.90, crowd_level: 0.88, brightness: 0.85, routine_change: true, unfamiliar_location: true })}
-            className="text-[10px] font-medium px-2 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 transition-colors"
+            onClick={() => applyPreset({ noise_level: 0.90, crowd_level: 0.85, brightness: 0.80, routine_change: true, unfamiliar_location: true })}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid #FECACA',
+              background: '#FEE2E2',
+              color: '#991B1B',
+              cursor: 'pointer',
+            }}
           >
             High Sensory Load
           </button>
@@ -72,16 +135,25 @@ export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
       </div>
 
       {/* Sliders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: 16,
+      }}>
         
-        {/* Noise Slider */}
-        <div className="space-y-1.5 bg-slate-900/40 p-3 rounded-xl border border-slate-800/60">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-300 flex items-center gap-1.5">
-              <Volume2 className="h-3.5 w-3.5 text-sky-400" />
+        {/* Noise */}
+        <div style={{
+          background: '#F8FAFC',
+          borderRadius: 14,
+          padding: '14px 16px',
+          border: '1px solid #E2E8F0',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Volume2 size={16} color="#10B981" />
               Noise Level
             </span>
-            <span className="font-mono font-bold text-sky-400">
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#10B981' }}>
               {Math.round(context.noise_level * 100)}%
             </span>
           </div>
@@ -92,18 +164,23 @@ export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
             step="0.01"
             value={context.noise_level}
             onChange={(e) => updateField('noise_level', parseFloat(e.target.value))}
-            className="w-full accent-sky-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer"
+            style={{ width: '100%', accentColor: '#10B981', cursor: 'pointer' }}
           />
         </div>
 
-        {/* Crowd Slider */}
-        <div className="space-y-1.5 bg-slate-900/40 p-3 rounded-xl border border-slate-800/60">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-300 flex items-center gap-1.5">
-              <Users className="h-3.5 w-3.5 text-indigo-400" />
+        {/* Crowd */}
+        <div style={{
+          background: '#F8FAFC',
+          borderRadius: 14,
+          padding: '14px 16px',
+          border: '1px solid #E2E8F0',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Users size={16} color="#3B82F6" />
               Crowd Density
             </span>
-            <span className="font-mono font-bold text-indigo-400">
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#3B82F6' }}>
               {Math.round(context.crowd_level * 100)}%
             </span>
           </div>
@@ -114,18 +191,23 @@ export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
             step="0.01"
             value={context.crowd_level}
             onChange={(e) => updateField('crowd_level', parseFloat(e.target.value))}
-            className="w-full accent-indigo-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer"
+            style={{ width: '100%', accentColor: '#3B82F6', cursor: 'pointer' }}
           />
         </div>
 
-        {/* Brightness Slider */}
-        <div className="space-y-1.5 bg-slate-900/40 p-3 rounded-xl border border-slate-800/60">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-300 flex items-center gap-1.5">
-              <Sun className="h-3.5 w-3.5 text-amber-400" />
+        {/* Brightness */}
+        <div style={{
+          background: '#F8FAFC',
+          borderRadius: 14,
+          padding: '14px 16px',
+          border: '1px solid #E2E8F0',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Sun size={16} color="#F59E0B" />
               Lighting / Glare
             </span>
-            <span className="font-mono font-bold text-amber-400">
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>
               {Math.round(context.brightness * 100)}%
             </span>
           </div>
@@ -136,18 +218,23 @@ export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
             step="0.01"
             value={context.brightness}
             onChange={(e) => updateField('brightness', parseFloat(e.target.value))}
-            className="w-full accent-amber-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer"
+            style={{ width: '100%', accentColor: '#F59E0B', cursor: 'pointer' }}
           />
         </div>
 
-        {/* Activity Slider */}
-        <div className="space-y-1.5 bg-slate-900/40 p-3 rounded-xl border border-slate-800/60">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-300 flex items-center gap-1.5">
-              <Zap className="h-3.5 w-3.5 text-teal-400" />
+        {/* Activity */}
+        <div style={{
+          background: '#F8FAFC',
+          borderRadius: 14,
+          padding: '14px 16px',
+          border: '1px solid #E2E8F0',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Zap size={16} color="#8B5CF6" />
               Activity Level
             </span>
-            <span className="font-mono font-bold text-teal-400">
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#8B5CF6' }}>
               {Math.round(context.activity_level * 100)}%
             </span>
           </div>
@@ -158,54 +245,89 @@ export const LiveSimulationSliders: React.FC<LiveSimulationSlidersProps> = ({
             step="0.01"
             value={context.activity_level}
             onChange={(e) => updateField('activity_level', parseFloat(e.target.value))}
-            className="w-full accent-teal-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer"
+            style={{ width: '100%', accentColor: '#8B5CF6', cursor: 'pointer' }}
           />
         </div>
 
       </div>
 
       {/* Discrete State Toggles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-3 border-t border-slate-800/80">
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+        gap: 12,
+        marginTop: 16,
+        paddingTop: 16,
+        borderTop: '1px solid #F1F5F9',
+      }}>
         
-        {/* Routine Change Toggle */}
-        <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/40 border border-slate-800/60">
-          <div className="flex items-center space-x-2">
-            <CalendarClock className="h-4 w-4 text-purple-400" />
+        {/* Routine Change */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          borderRadius: 14,
+          background: context.routine_change ? '#FFF0E6' : '#F8FAFC',
+          border: context.routine_change ? '1px solid #FED7AA' : '1px solid #E2E8F0',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <CalendarClock size={18} color="#EA580C" />
             <div>
-              <div className="text-xs font-medium text-slate-200">Routine Change</div>
-              <div className="text-[10px] text-slate-400">Unexpected schedule or task shift</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1E293B' }}>Routine Change</div>
+              <div style={{ fontSize: 11.5, color: '#64748B' }}>Schedule or plan shifted</div>
             </div>
           </div>
           <button
             onClick={() => updateField('routine_change', !context.routine_change)}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-              context.routine_change
-                ? 'bg-rose-500 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-            }`}
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              padding: '6px 14px',
+              borderRadius: 50,
+              border: 'none',
+              background: context.routine_change ? '#EA580C' : '#E2E8F0',
+              color: context.routine_change ? 'white' : '#64748B',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
           >
-            {context.routine_change ? 'ACTIVE (ON)' : 'OFF'}
+            {context.routine_change ? 'ON' : 'OFF'}
           </button>
         </div>
 
-        {/* Unfamiliar Location Toggle */}
-        <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/40 border border-slate-800/60">
-          <div className="flex items-center space-x-2">
-            <Compass className="h-4 w-4 text-emerald-400" />
+        {/* Unfamiliar Location */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          borderRadius: 14,
+          background: context.unfamiliar_location ? '#FEF9E7' : '#F8FAFC',
+          border: context.unfamiliar_location ? '1px solid #FDE68A' : '1px solid #E2E8F0',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Compass size={18} color="#D97706" />
             <div>
-              <div className="text-xs font-medium text-slate-200">Unfamiliar Location</div>
-              <div className="text-[10px] text-slate-400">New room, building, or route</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1E293B' }}>Unfamiliar Space</div>
+              <div style={{ fontSize: 11.5, color: '#64748B' }}>New room or venue</div>
             </div>
           </div>
           <button
             onClick={() => updateField('unfamiliar_location', !context.unfamiliar_location)}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-              context.unfamiliar_location
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-            }`}
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              padding: '6px 14px',
+              borderRadius: 50,
+              border: 'none',
+              background: context.unfamiliar_location ? '#D97706' : '#E2E8F0',
+              color: context.unfamiliar_location ? 'white' : '#64748B',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
           >
-            {context.unfamiliar_location ? 'ACTIVE (ON)' : 'OFF'}
+            {context.unfamiliar_location ? 'ON' : 'OFF'}
           </button>
         </div>
 

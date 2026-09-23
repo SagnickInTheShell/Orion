@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, PieChart, Sparkles, AlertCircle, Info, RefreshCw } from 'lucide-react';
+import {
+  BarChart3, RefreshCw, Volume2, Users, Sun,
+  Compass, Sparkles, CheckCircle2, Shield
+} from 'lucide-react';
 import { PatternsData } from '../types';
 import { api } from '../services/api';
 import { 
@@ -15,6 +18,14 @@ import {
 interface PatternsPageProps {
   userId: number;
 }
+
+const cardStyle: React.CSSProperties = {
+  background: '#FFFFFF',
+  borderRadius: 20,
+  border: '1px solid #ECEEF1',
+  padding: '24px 28px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+};
 
 export const PatternsPage: React.FC<PatternsPageProps> = ({ userId }) => {
   const [patterns, setPatterns] = useState<PatternsData | null>(null);
@@ -38,8 +49,26 @@ export const PatternsPage: React.FC<PatternsPageProps> = ({ userId }) => {
 
   if (isLoading || !patterns) {
     return (
-      <div className="glass-panel rounded-2xl p-12 text-center text-slate-400 animate-pulse">
-        Loading personal patterns and historical effectiveness data...
+      <div style={{
+        ...cardStyle,
+        padding: '60px 40px',
+        textAlign: 'center',
+        color: '#64748B',
+        fontSize: 14,
+      }}>
+        <div style={{
+          width: 44,
+          height: 44,
+          borderRadius: '50%',
+          background: '#EEF2FF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px',
+        }}>
+          <RefreshCw className="animate-spin" size={20} color="#4361EE" />
+        </div>
+        Gathering your personal patterns and strategy insights...
       </div>
     );
   }
@@ -48,72 +77,238 @@ export const PatternsPage: React.FC<PatternsPageProps> = ({ userId }) => {
     name: item.name,
     effectiveness: item.effectiveness_percentage,
     category: item.category,
-    samples: item.sample_count
+    samples: item.sample_count,
   }));
 
-  const contextChartData = patterns.context_distribution.map((item) => ({
-    name: item.factor,
-    pct: item.pct,
-    occurrences: item.occurrences
-  }));
+  const sensitivityConfigs: Record<string, { label: string; bg: string; text: string; bar: string; icon: any }> = {
+    noise: {
+      label: 'Sound & Noise',
+      bg: '#E6F7F0',
+      text: '#15803D',
+      bar: '#10B981',
+      icon: Volume2,
+    },
+    crowd: {
+      label: 'Crowd Density',
+      bg: '#EBF5FF',
+      text: '#1D4ED8',
+      bar: '#3B82F6',
+      icon: Users,
+    },
+    brightness: {
+      label: 'Light & Glare',
+      bg: '#FEF9E7',
+      text: '#B45309',
+      bar: '#F59E0B',
+      icon: Sun,
+    },
+    routine_change: {
+      label: 'Schedule Changes',
+      bg: '#FFF0E6',
+      text: '#C2410C',
+      bar: '#F97316',
+      icon: Sparkles,
+    },
+    unfamiliar_location: {
+      label: 'New Locations',
+      bg: '#F0F1FF',
+      text: '#4338CA',
+      bar: '#6366F1',
+      icon: Compass,
+    },
+  };
+
+  const barColors = [
+    '#10B981', // emerald
+    '#3B82F6', // blue
+    '#6366F1', // indigo
+    '#8B5CF6', // purple
+    '#06B6D4', // cyan
+    '#EC4899', // pink
+    '#F59E0B', // amber
+    '#14B8A6', // teal
+  ];
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       
-      {/* Header with Demo Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* ── Page Header ── */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 12,
+      }}>
         <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-sky-400" />
-              My Patterns & Strategy Effectiveness
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              background: '#EEF2FF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <BarChart3 size={18} color="#4361EE" strokeWidth={2.2} />
+            </div>
+            <h1 style={{
+              fontSize: 22,
+              fontWeight: 800,
+              color: '#1E293B',
+              letterSpacing: '-0.3px',
+              margin: 0,
+            }}>
+              My Patterns & Strategy Insights
             </h1>
             {patterns.is_demo_profile && (
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                Demo Profile Data
+              <span style={{
+                fontSize: 11,
+                fontWeight: 700,
+                padding: '3px 10px',
+                borderRadius: 50,
+                background: '#FEF3C7',
+                color: '#B45309',
+                border: '1px solid #FDE68A',
+              }}>
+                Demo Profile
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Empirical effectiveness aggregated from Alex's recorded feedback on interventions across {patterns.total_recorded_situations} situations.
+          <p style={{
+            fontSize: 13.5,
+            color: '#64748B',
+            marginTop: 5,
+            marginBottom: 0,
+          }}>
+            Personalized insights based on what accommodations have worked best across {patterns.total_recorded_situations} recorded situations.
           </p>
         </div>
 
         <button
           onClick={fetchPatterns}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs transition-colors self-start sm:self-auto"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '9px 16px',
+            borderRadius: 12,
+            border: 'none',
+            background: '#EEF2FF',
+            color: '#4361EE',
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background 0.15s ease',
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = '#E0E7FF')}
+          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = '#EEF2FF')}
         >
-          <RefreshCw className="h-3.5 w-3.5" />
+          <RefreshCw size={14} strokeWidth={2.2} />
           <span>Refresh Data</span>
         </button>
       </div>
 
-      {/* Sensitivities Breakdown (Personal Digital Twin Profile) */}
-      <div className="glass-panel rounded-2xl p-5 border-slate-800">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
-            Personal Digital Twin — Sensitivity Profile (v{patterns.profile_version})
+      {/* ── 1. Sensory Sensitivity Profile Cards ── */}
+      <div style={cardStyle}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 16,
+        }}>
+          <div>
+            <h2 style={{
+              fontSize: 16.5,
+              fontWeight: 700,
+              color: '#1E293B',
+              margin: '0 0 3px 0',
+              letterSpacing: '-0.2px',
+            }}>
+              Your Sensory Sensitivity Profile
+            </h2>
+            <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
+              Learned preferences that help ORION recommend timely sensory accommodations.
+            </p>
+          </div>
+          <span style={{
+            fontSize: 11.5,
+            fontWeight: 600,
+            color: '#64748B',
+            background: '#F1F5F9',
+            padding: '4px 10px',
+            borderRadius: 50,
+          }}>
+            v{patterns.profile_version} Model
           </span>
-          <span className="text-[10px] text-slate-500">Learned Baseline Weights</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 12,
+        }}>
           {Object.entries(patterns.sensitivities).map(([key, val]) => {
-            const labelMap: Record<string, string> = {
-              noise: 'Noise Sensitivity',
-              crowd: 'Crowd Sensitivity',
-              brightness: 'Lighting Sensitivity',
-              routine_change: 'Routine Change Sensitivity',
-              unfamiliar_location: 'Location Novelty Sensitivity'
+            const conf = sensitivityConfigs[key] || {
+              label: key,
+              bg: '#F8FAFC',
+              text: '#334155',
+              bar: '#3B82F6',
+              icon: Sparkles,
             };
+            const Icon = conf.icon;
+            const pct = Math.round(val * 100);
+
             return (
-              <div key={key} className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
-                <span className="text-[10px] text-slate-400 block line-clamp-1">{labelMap[key] || key}</span>
-                <span className="text-base font-bold font-mono text-sky-400 block mt-1">
-                  {Math.round(val * 100)}%
-                </span>
-                <div className="w-full bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden">
-                  <div className="bg-sky-400 h-1.5 rounded-full" style={{ width: `${val * 100}%` }} />
+              <div
+                key={key}
+                style={{
+                  background: conf.bg,
+                  borderRadius: 16,
+                  padding: '16px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
+                  transition: 'transform 0.15s ease',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: '#334155',
+                  }}>
+                    {conf.label}
+                  </span>
+                  <Icon size={16} color={conf.bar} strokeWidth={2.2} />
+                </div>
+
+                <div style={{
+                  fontSize: 24,
+                  fontWeight: 800,
+                  color: conf.text,
+                  letterSpacing: '-0.5px',
+                  lineHeight: 1,
+                }}>
+                  {pct}%
+                </div>
+
+                {/* Progress bar */}
+                <div style={{
+                  width: '100%',
+                  height: 6,
+                  borderRadius: 50,
+                  background: 'rgba(255,255,255,0.7)',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${pct}%`,
+                    height: '100%',
+                    borderRadius: 50,
+                    background: conf.bar,
+                    transition: 'width 0.4s ease',
+                  }} />
                 </div>
               </div>
             );
@@ -121,84 +316,233 @@ export const PatternsPage: React.FC<PatternsPageProps> = ({ userId }) => {
         </div>
       </div>
 
-      {/* Two Column Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* ── 2. Strategy Effectiveness & Triggers Grid ── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1.25fr 1fr',
+        gap: 20,
+      }}>
         
-        {/* Left: Intervention Effectiveness Ranking */}
-        <div className="lg:col-span-7 glass-panel rounded-2xl p-5 border-slate-800 space-y-4">
-          <div>
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
-              Intervention Effectiveness History
+        {/* Left: Strategy Effectiveness Chart */}
+        <div style={cardStyle}>
+          <div style={{ marginBottom: 18 }}>
+            <h3 style={{
+              fontSize: 16.5,
+              fontWeight: 700,
+              color: '#1E293B',
+              margin: '0 0 3px 0',
+              letterSpacing: '-0.2px',
+            }}>
+              Support Strategy Effectiveness
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Percentage of times each support strategy was rated helpful or very helpful by Alex.
+            <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
+              Percentage of times each support strategy was rated helpful by you.
             </p>
           </div>
 
-          <div className="h-64 w-full">
+          <div style={{ width: '100%', height: 280 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={effectivenessChartData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                <XAxis type="number" domain={[0, 100]} stroke="#64748b" fontSize={10} />
-                <YAxis dataKey="name" type="category" stroke="#64748b" fontSize={11} width={130} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem', fontSize: '12px' }}
-                  formatter={(val: any) => [`${val}% Effectiveness`, 'Score']}
+              <BarChart
+                data={effectivenessChartData}
+                layout="vertical"
+                margin={{ top: 5, right: 25, left: 10, bottom: 5 }}
+              >
+                <XAxis
+                  type="number"
+                  domain={[0, 100]}
+                  stroke="#94A3B8"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={{ stroke: '#E2E8F0' }}
+                  unit="%"
                 />
-                <Bar dataKey="effectiveness" fill="#38bdf8" radius={[0, 4, 4, 0]}>
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  stroke="#334155"
+                  fontSize={12}
+                  fontWeight={600}
+                  width={150}
+                  tickLine={false}
+                  axisLine={{ stroke: '#E2E8F0' }}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div style={{
+                          background: '#FFFFFF',
+                          border: '1px solid #E2E8F0',
+                          borderRadius: 12,
+                          padding: '10px 14px',
+                          boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+                        }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B' }}>
+                            {data.name}
+                          </div>
+                          <div style={{
+                            fontSize: 12.5,
+                            fontWeight: 700,
+                            color: '#10B981',
+                            marginTop: 3,
+                          }}>
+                            {data.effectiveness}% Helpful
+                          </div>
+                          <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+                            Based on {data.samples} recorded feedback entries
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar dataKey="effectiveness" radius={[0, 8, 8, 0]}>
                   {effectivenessChartData.map((_, index) => (
-                    <Cell key={`eff-cell-${index}`} fill={index === 0 ? '#38bdf8' : index === 1 ? '#818cf8' : '#34d399'} />
+                    <Cell
+                      key={`eff-cell-${index}`}
+                      fill={barColors[index % barColors.length]}
+                    />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-1.5 pt-2 border-t border-slate-800">
-            {patterns.effectiveness.slice(0, 4).map((eff) => (
-              <div key={eff.id} className="flex justify-between items-center text-xs py-1">
-                <span className="text-slate-300">{eff.name}</span>
-                <div className="flex items-center space-x-2">
-                  <span className="text-[11px] text-slate-500 font-mono">({eff.sample_count} samples)</span>
-                  <span className="font-mono font-bold text-sky-400">{eff.effectiveness_percentage}%</span>
+          {/* Quick summary chips */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            marginTop: 14,
+            paddingTop: 14,
+            borderTop: '1px solid #F1F5F9',
+          }}>
+            {patterns.effectiveness.slice(0, 3).map((eff) => (
+              <div
+                key={eff.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  borderRadius: 10,
+                  background: '#F8FAFC',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <CheckCircle2 size={16} color="#10B981" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#1E293B' }}>
+                    {eff.name}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 11.5, color: '#64748B' }}>
+                    {eff.sample_count} uses
+                  </span>
+                  <span style={{
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    color: '#065F46',
+                    background: '#D1FAE5',
+                    padding: '2px 8px',
+                    borderRadius: 50,
+                  }}>
+                    {eff.effectiveness_percentage}%
+                  </span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right: Common Context Factors */}
-        <div className="lg:col-span-5 glass-panel rounded-2xl p-5 border-slate-800 space-y-4">
-          <div>
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
-              Common Contextual Triggers
+        {/* Right: Common Context Triggers */}
+        <div style={cardStyle}>
+          <div style={{ marginBottom: 18 }}>
+            <h3 style={{
+              fontSize: 16.5,
+              fontWeight: 700,
+              color: '#1E293B',
+              margin: '0 0 3px 0',
+              letterSpacing: '-0.2px',
+            }}>
+              Frequent Context Triggers
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Frequency distribution across recorded historical contexts.
+            <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
+              Environmental factors present during past elevated support needs.
             </p>
           </div>
 
-          <div className="space-y-3 pt-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {patterns.context_distribution.map((ctx, idx) => (
-              <div key={idx} className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-300 font-medium">{ctx.factor}</span>
-                  <span className="font-mono font-bold text-sky-400">{ctx.pct}% ({ctx.occurrences} events)</span>
+              <div
+                key={idx}
+                style={{
+                  background: '#F8FAFC',
+                  borderRadius: 14,
+                  padding: '14px 16px',
+                  border: '1px solid #E2E8F0',
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: 8,
+                }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 600, color: '#1E293B' }}>
+                    {ctx.factor}
+                  </span>
+                  <span style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: '#4361EE',
+                    background: '#EEF2FF',
+                    padding: '2px 8px',
+                    borderRadius: 50,
+                  }}>
+                    {ctx.pct}% ({ctx.occurrences} events)
+                  </span>
                 </div>
-                <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-gradient-to-r from-sky-400 to-indigo-400 h-1.5 rounded-full" style={{ width: `${ctx.pct}%` }} />
+
+                <div style={{
+                  width: '100%',
+                  height: 7,
+                  borderRadius: 50,
+                  background: '#E2E8F0',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${ctx.pct}%`,
+                    height: '100%',
+                    borderRadius: 50,
+                    background: 'linear-gradient(90deg, #3B82F6 0%, #6366F1 100%)',
+                  }} />
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Seed Notice */}
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[10px] text-slate-400 space-y-1">
-            <div className="flex items-center gap-1 font-semibold text-amber-400">
-              <Info className="h-3 w-3" />
-              <span>Transparency Disclosure</span>
-            </div>
-            <p>
-              These historical values are seeded demo data for hackathon demonstration. ORION never pretends synthetic demo data represents real clinical measurements.
+          {/* Privacy Note */}
+          <div style={{
+            marginTop: 18,
+            padding: '12px 14px',
+            borderRadius: 12,
+            background: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 10,
+          }}>
+            <Shield size={16} color="#10B981" style={{ flexShrink: 0, marginTop: 2 }} />
+            <p style={{
+              fontSize: 12,
+              color: '#64748B',
+              margin: 0,
+              lineHeight: 1.45,
+            }}>
+              Your data stays local and personal. Patterns adapt with each check-in to reflect your authentic preferences.
             </p>
           </div>
         </div>

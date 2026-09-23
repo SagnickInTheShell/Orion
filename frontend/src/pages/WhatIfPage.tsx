@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sliders, Sparkles, AlertCircle, ArrowDownRight, Check, BarChart2 } from 'lucide-react';
+import { Sliders, BarChart2, Shield, ArrowDownRight, Check, Sparkles } from 'lucide-react';
 import { ContextData, SimulationResponse } from '../types';
 import { api } from '../services/api';
 import { 
@@ -16,6 +16,14 @@ interface WhatIfPageProps {
   userId: number;
   currentContext: ContextData;
 }
+
+const cardStyle: React.CSSProperties = {
+  background: '#FFFFFF',
+  borderRadius: 20,
+  border: '1px solid #ECEEF1',
+  padding: '24px 28px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+};
 
 export const WhatIfPage: React.FC<WhatIfPageProps> = ({ userId, currentContext }) => {
   const [simulation, setSimulation] = useState<SimulationResponse | null>(null);
@@ -74,98 +82,227 @@ export const WhatIfPage: React.FC<WhatIfPageProps> = ({ userId, currentContext }
   })) || [];
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       
-      {/* Header */}
+      {/* ── Page Header ── */}
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
-          <Sliders className="h-5 w-5 text-sky-400" />
-          What-If Scenario Simulator
-        </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Explore counterfactual support scenarios to see how combinations of accommodations reduce projected support demand.
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 32,
+            height: 32,
+            borderRadius: 10,
+            background: '#EEF2FF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Sliders size={18} color="#4361EE" strokeWidth={2.2} />
+          </div>
+          <h1 style={{
+            fontSize: 22,
+            fontWeight: 800,
+            color: '#1E293B',
+            letterSpacing: '-0.3px',
+            margin: 0,
+          }}>
+            What-If Scenario Simulator
+          </h1>
+        </div>
+        <p style={{
+          fontSize: 13.5,
+          color: '#64748B',
+          marginTop: 5,
+          marginBottom: 0,
+        }}>
+          Explore how different accommodations and quiet strategies can reduce sensory load before stepping into challenging situations.
         </p>
       </div>
 
-      {/* Current Situation Strip */}
-      <div className="glass-panel rounded-2xl p-4 border-slate-800">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono block mb-2">
+      {/* ── Current Baseline Context Strip ── */}
+      <div style={cardStyle}>
+        <div style={{
+          fontSize: 12.5,
+          fontWeight: 700,
+          color: '#64748B',
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+          marginBottom: 12,
+        }}>
           Current Baseline Context
-        </span>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 block text-[10px]">Acoustic Noise</span>
-            <span className="font-mono font-bold text-sky-400">{Math.round(currentContext.noise_level * 100)}%</span>
-          </div>
-          <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 block text-[10px]">Crowd Density</span>
-            <span className="font-mono font-bold text-indigo-400">{Math.round(currentContext.crowd_level * 100)}%</span>
-          </div>
-          <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 block text-[10px]">Routine Status</span>
-            <span className={`font-bold ${currentContext.routine_change ? 'text-rose-400' : 'text-slate-300'}`}>
-              {currentContext.routine_change ? 'Changed' : 'Standard'}
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+          gap: 12,
+        }}>
+          <div style={{
+            background: '#E6F7F0',
+            borderRadius: 14,
+            padding: '14px 16px',
+            border: '1px solid #D1FAE5',
+          }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#166534', display: 'block' }}>
+              Sound Level
+            </span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#15803D', display: 'block', marginTop: 2 }}>
+              {Math.round(currentContext.noise_level * 100)}%
             </span>
           </div>
-          <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 block text-[10px]">Physical Space</span>
-            <span className={`font-bold ${currentContext.unfamiliar_location ? 'text-amber-400' : 'text-slate-300'}`}>
+
+          <div style={{
+            background: '#EBF5FF',
+            borderRadius: 14,
+            padding: '14px 16px',
+            border: '1px solid #DBEAFE',
+          }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#1E40AF', display: 'block' }}>
+              Crowd Density
+            </span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#1D4ED8', display: 'block', marginTop: 2 }}>
+              {Math.round(currentContext.crowd_level * 100)}%
+            </span>
+          </div>
+
+          <div style={{
+            background: currentContext.routine_change ? '#FFF0E6' : '#F8FAFC',
+            borderRadius: 14,
+            padding: '14px 16px',
+            border: currentContext.routine_change ? '1px solid #FED7AA' : '1px solid #E2E8F0',
+          }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: currentContext.routine_change ? '#C2410C' : '#64748B', display: 'block' }}>
+              Routine Status
+            </span>
+            <span style={{
+              fontSize: 18,
+              fontWeight: 800,
+              color: currentContext.routine_change ? '#EA580C' : '#1E293B',
+              display: 'block',
+              marginTop: 3,
+            }}>
+              {currentContext.routine_change ? 'Changed' : 'Normal'}
+            </span>
+          </div>
+
+          <div style={{
+            background: currentContext.unfamiliar_location ? '#FEF9E7' : '#F8FAFC',
+            borderRadius: 14,
+            padding: '14px 16px',
+            border: currentContext.unfamiliar_location ? '1px solid #FDE68A' : '1px solid #E2E8F0',
+          }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: currentContext.unfamiliar_location ? '#B45309' : '#64748B', display: 'block' }}>
+              Environment Space
+            </span>
+            <span style={{
+              fontSize: 18,
+              fontWeight: 800,
+              color: currentContext.unfamiliar_location ? '#D97706' : '#1E293B',
+              display: 'block',
+              marginTop: 3,
+            }}>
               {currentContext.unfamiliar_location ? 'Unfamiliar' : 'Familiar'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Simulation View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* ── Main Simulation Grid ── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1.25fr 1fr',
+        gap: 20,
+      }}>
         
-        {/* Left: Scenarios Comparison Table / Cards */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
-              Simulated Support Requirements
-            </h3>
-            <span className="text-[10px] text-slate-400">Baseline Level: {simulation?.baseline_level}</span>
+        {/* Left: Scenarios Comparison Cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2 style={{
+              fontSize: 16.5,
+              fontWeight: 700,
+              color: '#1E293B',
+              margin: 0,
+            }}>
+              Simulated Support Load
+            </h2>
+            <span style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: '#64748B',
+              background: '#F1F5F9',
+              padding: '4px 12px',
+              borderRadius: 50,
+            }}>
+              Baseline: {simulation?.baseline_level || 'EVAL'}
+            </span>
           </div>
 
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {simulation?.scenarios.map((sc, i) => {
               const isBase = sc.intervention_keys.includes('none');
-              const levelColor = {
-                LOW: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-                MEDIUM: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-                HIGH: 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-              }[sc.level];
+              const levelBadge = {
+                LOW: { bg: '#D1FAE5', text: '#065F46', border: '#A7F3D0' },
+                MEDIUM: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
+                HIGH: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA' },
+              }[sc.level] || { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' };
 
               return (
                 <div
                   key={i}
-                  className={`glass-panel rounded-xl p-4 transition-all duration-200 border ${
-                    isBase ? 'border-slate-700 bg-slate-900/50' : 'border-slate-800'
-                  }`}
+                  style={{
+                    ...cardStyle,
+                    padding: '18px 20px',
+                    border: isBase ? '1.5px solid #CBD5E1' : '1px solid #ECEEF1',
+                    background: isBase ? '#F8FAFC' : '#FFFFFF',
+                    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 6px 18px rgba(0,0,0,0.06)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.transform = 'none';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                  }}
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
                     <div>
-                      <div className="flex items-center space-x-2">
-                        <h4 className="text-sm font-bold text-slate-100">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontSize: 14.5, fontWeight: 700, color: '#1E293B' }}>
                           {sc.name}
-                        </h4>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${levelColor}`}>
+                        </span>
+                        <span style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 50,
+                          background: levelBadge.bg,
+                          color: levelBadge.text,
+                          border: `1px solid ${levelBadge.border}`,
+                        }}>
                           {sc.level}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p style={{ fontSize: 12.5, color: '#64748B', margin: 0, lineHeight: 1.45 }}>
                         {sc.explanation}
                       </p>
                     </div>
 
-                    <div className="text-right shrink-0">
-                      <div className="text-lg font-mono font-bold text-sky-400">
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: '#1E293B' }}>
                         {Math.round(sc.support_score * 100)}%
                       </div>
                       {!isBase && (
-                        <div className="text-[11px] text-emerald-400 flex items-center justify-end gap-0.5 font-medium">
-                          <ArrowDownRight className="h-3 w-3" />
+                        <div style={{
+                          fontSize: 12,
+                          color: '#10B981',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                          gap: 2,
+                          marginTop: 2,
+                        }}>
+                          <ArrowDownRight size={14} />
                           <span>-{Math.round(sc.score_reduction * 100)}% load</span>
                         </div>
                       )}
@@ -177,58 +314,101 @@ export const WhatIfPage: React.FC<WhatIfPageProps> = ({ userId, currentContext }
           </div>
         </div>
 
-        {/* Right: Comparative Chart & Intervention Toggles */}
-        <div className="lg:col-span-5 space-y-5">
+        {/* Right: Comparative Impact Chart & Selectors */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           
           {/* Visual Chart */}
-          <div className="glass-panel rounded-2xl p-5 border-slate-800">
-            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono mb-4 flex items-center gap-1.5">
-              <BarChart2 className="h-4 w-4 text-sky-400" />
-              Comparative Impact Visualizer
-            </h4>
+          <div style={cardStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <BarChart2 size={16} color="#4361EE" />
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1E293B', margin: 0 }}>
+                Comparative Load Visualizer
+              </h3>
+            </div>
 
-            <div className="h-56 w-full">
+            <div style={{ width: '100%', height: 220 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={10} tickLine={false} interval={0} angle={-15} textAnchor="end" />
-                  <YAxis stroke="#64748b" fontSize={10} domain={[0, 100]} />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#94A3B8"
+                    fontSize={10}
+                    tickLine={false}
+                    interval={0}
+                    angle={-15}
+                    textAnchor="end"
+                  />
+                  <YAxis stroke="#94A3B8" fontSize={10} domain={[0, 100]} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem', fontSize: '12px' }}
-                    itemStyle={{ color: '#38bdf8' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div style={{
+                            background: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: 12,
+                            padding: '10px 14px',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+                          }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B' }}>
+                              {data.fullName}
+                            </div>
+                            <div style={{ fontSize: 12.5, fontWeight: 700, color: '#4361EE', marginTop: 3 }}>
+                              Support Load: {data.score}% ({data.level})
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                   />
                   <Bar dataKey="score" radius={[6, 6, 0, 0]}>
                     {chartData.map((entry, index) => {
-                      const color = entry.level === 'HIGH' ? '#f43f5e' : entry.level === 'MEDIUM' ? '#fbbf24' : '#34d399';
+                      const color = entry.level === 'HIGH' ? '#F43F5E' : entry.level === 'MEDIUM' ? '#F59E0B' : '#10B981';
                       return <Cell key={`cell-${index}`} fill={color} />;
                     })}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="text-[10px] text-slate-500 text-center mt-1">
-              Simulated Support Index (Lower is calmer / better managed)
+            <div style={{ fontSize: 11.5, color: '#64748B', textAlign: 'center', marginTop: 4 }}>
+              Lower scores indicate a calmer, more manageable sensory state.
             </div>
           </div>
 
           {/* Intervention Selectors to include in simulation */}
-          <div className="glass-panel rounded-2xl p-5 border-slate-800">
-            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono block mb-2">
-              Toggle Interventions in Simulation
+          <div style={cardStyle}>
+            <span style={{
+              fontSize: 13,
+              fontWeight: 700,
+              color: '#1E293B',
+              display: 'block',
+              marginBottom: 10,
+            }}>
+              Select Accommodations to Compare
             </span>
 
-            <div className="flex flex-wrap gap-2">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {candidateOptions.map((opt) => {
                 const isSelected = selectedInterventions.includes(opt.id);
                 return (
                   <button
                     key={opt.id}
                     onClick={() => toggleOption(opt.id)}
-                    className={`text-xs px-2.5 py-1.5 rounded-lg border font-medium transition-all ${
-                      isSelected
-                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                        : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-                    }`}
+                    style={{
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                      padding: '7px 13px',
+                      borderRadius: 10,
+                      border: isSelected ? '1.5px solid #4361EE' : '1px solid #E2E8F0',
+                      background: isSelected ? '#EEF2FF' : '#FFFFFF',
+                      color: isSelected ? '#4361EE' : '#64748B',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
                   >
+                    {isSelected && '✓ '}
                     {opt.label}
                   </button>
                 );
@@ -240,11 +420,18 @@ export const WhatIfPage: React.FC<WhatIfPageProps> = ({ userId, currentContext }
 
       </div>
 
-      {/* Mandatory Specification Disclaimer */}
-      <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
-        <AlertCircle className="h-4 w-4 text-sky-400 shrink-0" />
-        <span>
-          “Simulation based on this user's historical context and intervention feedback. Not a medical probability.”
+      {/* ── Reassurance Banner ── */}
+      <div style={{
+        ...cardStyle,
+        padding: '14px 18px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        background: '#F8FAFC',
+      }}>
+        <Shield size={18} color="#10B981" style={{ flexShrink: 0 }} />
+        <span style={{ fontSize: 12.5, color: '#64748B' }}>
+          Simulations project potential relief based on your past feedback to help you plan proactive strategies.
         </span>
       </div>
 

@@ -247,3 +247,4 @@ ORION is engineered with firm ethical safeguards:
 - **Privacy First**: Sensors operate client-side in memory; zero raw audio or video frames are ever recorded or stored.
 - **Transparent Scoring**: Scoring rules and similarity weights are explainable and traceable to recorded user data, never opaque black-box probabilities.
 - **Individual-Centric**: Learns only the specific user's idiosyncratic patterns and accommodations.
+# hack______
